@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASD2-lab4-ex2015-16", "ASD2-lab4-ex2015-16\ASD2-lab4-ex2015-16.csproj", "{0DB1A041-FAF8-432E-BF51-0383F2BDFE6E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0DB1A041-FAF8-432E-BF51-0383F2BDFE6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DB1A041-FAF8-432E-BF51-0383F2BDFE6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DB1A041-FAF8-432E-BF51-0383F2BDFE6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DB1A041-FAF8-432E-BF51-0383F2BDFE6E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
