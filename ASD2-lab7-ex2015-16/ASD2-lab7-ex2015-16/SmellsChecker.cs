@@ -10,6 +10,8 @@ namespace Lab07
         private readonly int[][] customerPreferences;
         private readonly int satisfactionLevel;
 
+        private int[] customerSatisfactionLevel;
+        private int customerCount;
         /// <summary>
         ///   
         /// </summary>
@@ -29,6 +31,9 @@ namespace Lab07
             this.smellCount = smellCount;
             this.customerPreferences = customerPreferences;
             this.satisfactionLevel = satisfactionLevel;
+
+            this.customerCount = customerPreferences.GetLength(0);
+            this.customerSatisfactionLevel = new int[customerCount];
         }
 
         /// <summary>
@@ -39,20 +44,14 @@ namespace Lab07
         public Boolean AssignSmells(out bool[] smells)
         {
             bool[] tmpSmells = new bool[smellCount];
-
             smells = null;
-            //check if all customers can be hypothetically satisfied according to smells and their preferences
-            if(!checkCanSatisfyCustomers())
-            {
-                return false;
-            }
 
             bool foundSatisfactoryForAll = AssignSmellsRec(tmpSmells, 0);
-
             if(foundSatisfactoryForAll)
             {
                 smells = tmpSmells;
             }
+
             return foundSatisfactoryForAll;
         }
 
@@ -60,59 +59,30 @@ namespace Lab07
         {
             if(level == smellCount)
             {   //check if combination of smells is satisfactory for all
-                return trySatisfyCustomers(smells);
+                return checkCanSatisfyCustomers(level);
             }
 
-            for (int i = level; i < smellCount; i++)
+            bool foundSatisfactory = trySmell(smells, level, true);
+            if(foundSatisfactory)
             {
-                smells[i] = true;
-                bool isSatisfactory = AssignSmellsRec(smells, level + 1);
+                return true;
+            }
 
-                if(isSatisfactory)
-                {
-                    return true;
-                }
-
-                smells[i] = false;
-                isSatisfactory = AssignSmellsRec(smells, level + 1);
-
-                if (isSatisfactory)
-                {
-                    return true;
-                }
+            foundSatisfactory = trySmell(smells, level, false);
+            if(foundSatisfactory)
+            {
+                return true;
             }
 
             return false;
         }
 
-        public bool trySatisfyCustomers(bool[] smells)
+        public bool checkCanSatisfyCustomers(int level)
         {
-            for (int customer = 0; customer < customerPreferences.GetLength(0); customer++)
+            for (int customer = 0; customer < customerCount; customer++)
             {
-                int tmpSatisfactionLevel = 0;
-                for (int smell = 0; smell < smellCount; smell++)
-                {
-                    if (smells[smell])
-                    {
-                        tmpSatisfactionLevel += customerPreferences[customer][smell];
-                    }
-                }
-                if (tmpSatisfactionLevel < satisfactionLevel)
-                {   //if not satisfactory for ANY customer, indicate failure
-                    return false;
-                }
-            }
-
-            //is satisfactory for EVERY customer
-            return true;
-        }
-
-        public bool checkCanSatisfyCustomers()
-        {
-            for (int customer = 0; customer < customerPreferences.GetLength(0); customer++)
-            {
-                int tmpSatisfactionLevel = 0;
-                for (int smell = 0; smell < smellCount; smell++)
+                int tmpSatisfactionLevel = customerSatisfactionLevel[customer];
+                for (int smell = level; smell < smellCount; smell++)
                 {
                     if (customerPreferences[customer][smell] == 1)
                     {
@@ -127,6 +97,50 @@ namespace Lab07
 
             //it is hypothetically possible to satisfy every customer
             return true;
+        }
+
+        public bool trySmell(bool[] smells, int smell, bool isChoosen)
+        {
+            smells[smell] = isChoosen;
+            //check if current smell choice can lead to solution
+            bool canSatisfyCustomers = checkCanSatisfyCustomers(smell);
+            if (!canSatisfyCustomers)
+            {
+                return false;
+            }
+
+            if(isChoosen)
+            {
+                addSmellToCustomerSatisfactionLevel(smell);
+            }
+
+            bool isSatisfactory = AssignSmellsRec(smells, smell + 1);
+            if (isSatisfactory)
+            {
+                return true;
+            }
+
+            if(isChoosen)
+            {
+                removeSmellFromCustomerSatisfactionLevel(smell);
+            }
+            return false;
+        }
+
+        public void addSmellToCustomerSatisfactionLevel(int smell)
+        {
+            for (int customer = 0; customer < customerCount; customer++)
+            {
+                customerSatisfactionLevel[customer] += customerPreferences[customer][smell];
+            }
+        }
+
+        public void removeSmellFromCustomerSatisfactionLevel(int smell)
+        {
+            for (int customer = 0; customer < customerCount; customer++)
+            {
+                customerSatisfactionLevel[customer] -= customerPreferences[customer][smell];
+            }
         }
 
         /// <summary>
